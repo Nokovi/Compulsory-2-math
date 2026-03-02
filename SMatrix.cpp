@@ -108,9 +108,80 @@ void SMatrix::print()
 	}
 }
 
+
+
 Vec4 SMatrix::Solve(Vec4& b)
 {
-	return Vec4{0,0,0,0};
+	Vec4 x;
+	Vec4 b_perm({ b[permutasjon[0]], b[permutasjon[1]], b[permutasjon[2]], b[permutasjon[3]] });
+	int n = 4;
+	int m = 4;
+
+	for (int k = 0; k < n - 1; k++) // m==n
+		for (int i = k + 1; i < n; i++)
+			b_perm[i] = b_perm[i] - matrix[i][k] * b_perm[k];
+	for (int i = n - 1; i >= 0; i--)
+	{
+		x.val[i] = b_perm[i];
+		for (int j = i + 1; j < n; j++)
+			x.val[i] = x.val[i] - matrix[i][j] * x.val[j];
+		x.val[i] = x.val[i] / matrix[i][i];
+	}
+	return x;
+}
+
+void SMatrix::m4x4LU()
+{
+	int m = 4;
+	int n = 4;
+	if (rows != 4 || columns != 4) return;
+
+	for (int k = 0; k < m - 1; k++)
+	{
+		pivot(k);
+		// By row operations we obtain 0 under diagonal element
+		// in all rows below (column k)
+		// We subtract a multiplum of kth row
+		// from the rows below, starting from left
+		for (int i = k + 1; i < m; i++) {
+			// Multiply with this and subtract from row i
+			// This becomes zero, store factor here
+			matrix[i][k] = matrix[i][k] / matrix[k][k];
+			for (int j = k + 1; j < n; j++) {
+				// column to the right of the column which gets zeros
+				matrix[i][j] = matrix[i][j] - matrix[i][k] * matrix[k][j];
+			}
+		}
+	}
+	print();
+}
+
+void SMatrix::pivot(int k)
+{
+	float EPS = 0.00001;
+	float debug = false;
+	int m = 4;
+	int n = 4;
+
+	if (-EPS <= matrix[k][k] && matrix[k][k] < EPS) // zero diagonalelement
+	{
+			// pivotering/swap - find row with largest element in column
+			if (debug) std::cout << "must pivot.\n";
+			int pivot = k + 1; // initiate for row pivoting
+			for (int i = k + 2; i < m; i++)
+			{
+				if (matrix[i][k] > matrix[pivot][k])
+					pivot = i;
+			}
+			if (-EPS <= matrix[k][k] && matrix[k][k] < EPS)
+				// std::cout << "Can not make inverse\n";
+				; // exception
+				// swapper rows
+			for (int j = k; j < n; j++)
+				std::swap(matrix[k][j], matrix[pivot][j]);
+			std::swap(permutasjon[k], permutasjon[pivot]);
+	}
+
 }
 
 

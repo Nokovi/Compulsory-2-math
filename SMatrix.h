@@ -1,11 +1,25 @@
 #pragma once
 #include <vector>
 #include <string>
-
+#include <iostream>
 
 //simple struct.
 struct Vec4 {
-	float X, Y, Z, W;
+	float val[4];
+
+
+
+	void print() {
+		std::cout << "< ";
+		for (int i = 0; i < 4; i++) {
+			std::cout << i << " ";
+		}
+		std::cout << ">" << std::endl;
+	}
+
+	float& operator[](int i) {
+		return val[i];
+	}
 };
 
 
@@ -13,6 +27,9 @@ struct Vec4 {
 struct SMatrix
 {
 	std::vector<std::vector<float>> matrix;
+
+	int permutasjon[4] = {0,1,2,3};
+
 public:
 
 //variables
@@ -48,7 +65,8 @@ public:
 
 	Vec4 Solve(Vec4 &b);
 
+	void m4x4LU();
 
-
+	void pivot(int k);
 };
 

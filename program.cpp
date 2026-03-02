@@ -70,12 +70,81 @@ bool program::run()
 
 		R.print();
 	}
+	break;
 	case 'c':
+	{
+		char  newMatrixID;
+		char matrixToLU;
+		cout << "newMatrix char";
+		cin >> newMatrixID;
+		cout << "Matrix(4x4) char:";
+		cin >> matrixToLU;
+
+		int matrixID = FindMatrixByID(matrixToLU);
+
+		SMatrix R = matrixArray[matrixID];
+
+		R.ID = newMatrixID;
+
+		R.m4x4LU();
+		matrixArray.push_back(R);
+	}
 		break;
 	case 'd':
+	{
+		cout << "Insert numbers for vector b.";
+		Vec4 V;
+		cin >> V[0];
+		cin >> V[1];
+		cin >> V[2];
+		cin >> V[3];
 
+		cout << "Select matrix (4x4).";
+		char m;
+		cin >> m;
 
+		int matrixID = FindMatrixByID(m);
+
+		Vec4 x = matrixArray[matrixID].Solve(V);
+		x.print();
+	}
+		break;
 	case '1':
+	{
+		SMatrix M1 = SMatrix(4, 4, '1');
+		Vec4 b;
+
+		struct point { float x, y; };
+
+		point A({ 0,1 });
+		point B({ 1/2,9/16 });
+		point C({ 3/2 , 0-5/16 });
+		point D({ 3,4 });
+
+		vector<vector<float>> M = {
+			{ powf(A.x, 3), powf(A.x, 2), powf(A.x, 1), 1
+			},
+			{ powf(B.x, 3), powf(B.x, 2), powf(B.x, 1), 1
+			},
+			{powf(C.x, 3), powf(C.x, 2), powf(C.x, 1), 1
+			},
+			{powf(D.x, 3), powf(D.x, 2), powf(D.x, 1), 1
+			}
+		};
+
+		b = { A.y, B.y, C.y, D.y };
+
+
+		M1.setMatrix(M);
+
+		M1.m4x4LU();
+
+		Vec4 Solution = M1.Solve(b);
+		
+		Solution.print();
+
+	}
+	break;
 	case '2':
 	case '3':
 	case '4':
